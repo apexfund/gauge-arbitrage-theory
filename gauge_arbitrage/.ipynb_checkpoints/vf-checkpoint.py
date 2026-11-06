@@ -71,10 +71,11 @@ def align(J_new, J_prev):
 def run_estimator(X, L=100, k=1, dt=1.0):
     """V&F detector"""
     T, N = X.shape[0] - 1, X.shape[1]
-    logret = np.diff(np.log(X), axis=0)          # T x N log-returns
+    logret = np.diff(np.log(X), axis=0)          # T x N returns (not log returns)
     A2 = np.full(T + 1, np.nan)
     ah = [None] * (T + 1)
     lams = [None] * (T + 1)
+    J_values=[]
     J_prev, a_prev = None, None
     for t in range(L, T):                        # window = returns ending at t; predict step t -> t+1
         R = logret[t - L:t]                      # L x N
@@ -82,12 +83,13 @@ def run_estimator(X, L=100, k=1, dt=1.0):
         G = G_hat(Omega_hat)                                     # Eq. (85)
         J, lam_k, lam_all = null_basis(G, k)                     # Eqs. (86)-(88)
         J = align(J, J_prev)                                     # Appendix A
+        J_values.append(J)
         a = alpha_hat(J, X[t], X[t + 1], dt)                     # Eq. (89), uses J(t) and the NEXT step
         if a_prev is not None:
             A2[t + 1] = a @ a_prev                               # Eq. (90): sum_A alpha^A(t) alpha^A(t+1)
         ah[t + 1], lams[t + 1] = a, lam_all
         J_prev, a_prev = J, a
-    return {"A2": A2, "alpha_hat": ah, "lambdas": lams}
+    return {"A2": A2, "alpha_hat": ah, "lambdas": lams, "J_hat": J_values}
 
 ########################################################################
 #Subclass for the series in V&F (Eq. (106))
@@ -112,6 +114,51 @@ class vf_series(Series):
         dW=np.sqrt(self.dt) * Z[:, i]
         W = np.concatenate([[0], np.cumsum(dW)])
         return W
+    
+########################################################################
+#Subclass for markets
+class vf_market(Series):
+    pass
 
+########################################################################
+#D CALCULATION
+
+#Log returns (since the detector run_estimator uses log returns)
+def calc_R(X):
+    return np.diff(np.log(X), axis=0)
+
+#Left side calculation (E[h_th_t+1]) (Use this to verify)
+def D_direct(R, J):
+    h = R @ J                      # (T,)  h_t = J' r_t
+    prod = h[:-1] * h[1:]          # h_t * h_{t+1}, t = 0 .. T-2
+    se = prod.std(ddof=1) / np.sqrt(len(prod))   # standard error of the mean
+    return prod.mean(), se
+
+def moments(R):
+    T, N = R.shape
+    mu = R.mean(axis=0)                       # (N,)
+    Rc = R - mu                               # centred returns
+    Gamma0 = Rc.T @ Rc / T                    # Cov(r_t, r_t)
+    Gamma1 = Rc[1:].T @ Rc[:-1] / (T - 1)     # Gamma1[i,j] = Cov(r_{i,t+1}, r_{j,t})
+    return mu, Gamma0, Gamma1
+
+#Right side (J^T(Gamma_1+mumu^T)J) (USE THIS ONE)
+def D_formula(R, J):
+    mu, _, Gamma1 = moments(R)
+    drift_part = (J @ mu) ** 2                # (J' mu)^2
+    autocov_part = J @ Gamma1 @ J             # J' Gamma_1 J
+    return drift_part + autocov_part, drift_part, autocov_part
+
+def split_autocov(Gamma1, J):
+    """J' Gamma_1 J = own-autocorrelation part + cross-lag part."""
+    own = np.sum(J ** 2 * np.diag(Gamma1))
+    cross = J @ Gamma1 @ J - own
+    return own, cross
+
+#calculate the total D (USE THIS TO COMPARE AGAINST DETECTOR VALUE)
+def D_total(R, J):
+    return sum(D_formula(R, J_A)[0] for J_A in J.T)
+
+########################################################################
 if __name__ == "__main__":
     pass
