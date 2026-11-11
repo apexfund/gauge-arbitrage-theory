@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+src/gauge_arbitrage/__init__.py
+src/gauge_arbitrage/time_series.py
+src/gauge_arbitrage/vf.py
+src/gauge_arbitrage.egg-info/PKG-INFO
+src/gauge_arbitrage.egg-info/SOURCES.txt
+src/gauge_arbitrage.egg-info/dependency_links.txt
+src/gauge_arbitrage.egg-info/requires.txt
+src/gauge_arbitrage.egg-info/top_level.txt
