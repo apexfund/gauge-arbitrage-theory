@@ -1,1 +1,2 @@
 # gauge-arbitrage-theory
+Vázquez and Farinelli (V&F, arXiv 0908.3043) propose a gauge-invariant measure of arbitrage and a detector for it. We want to find out what that detector responds to. Specifically, we want to know what it means mathematically (what statistic of the return process it computes), what it means financially (what market behavior makes it positive, negative, or zero), and whether it is equivalent to, or a disguised version of, something already known, such as return autocorrelation, lead-lag structure, or cointegration.
