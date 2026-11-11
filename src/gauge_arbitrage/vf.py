@@ -156,6 +156,7 @@ def split_autocov(Gamma1, J):
     return own, cross
 
 #calculate the total D (USE THIS TO COMPARE AGAINST DETECTOR VALUE)
+#Sum over k calm directions
 def D_total(R, J):
     return sum(D_formula(R, J_A)[0] for J_A in J.T)
 
