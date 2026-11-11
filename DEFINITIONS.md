@@ -1,4 +1,4 @@
-# DEFINITIONS.md — Shared definitions and conventions for the Gauge Arbitrage project
+# DEFINITIONS.md: Shared definitions and conventions for the Gauge Arbitrage project
 *Instructions:* If code and this file disagree, this file wins until this file is changed. Changes go through a pull request with a one-line reason.
 
 ## 0. Conventions
