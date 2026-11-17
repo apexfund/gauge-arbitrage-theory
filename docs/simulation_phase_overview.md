@@ -36,9 +36,9 @@ The detector reads positive when a certain portfolio's returns tend to continue,
 
 Optional math, for those who want it (returns have zero mean in all three relationships):
 
-```latex
+$`
 \Gamma_0 = \mathrm{Cov}(r_t, r_t), \qquad \Gamma_1 = E[\, r_t \, r_{t+1}^{\top} ], \qquad D_{\mathrm{pred}} = J^{*\top} \Gamma_1 J^{*}, \qquad \rho_{\mathrm{pred}} = \frac{J^{*\top} \Gamma_1 J^{*}}{J^{*\top} \Gamma_0 J^{*}}
-```
+`$
 
 The rest of the doc compares the detector's actual average, called D̂, against D\_pred.
 
