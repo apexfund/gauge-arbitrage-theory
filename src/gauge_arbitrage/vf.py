@@ -68,6 +68,7 @@ def align(J_new, J_prev):
     C_hat = U @ Vt                               # nearest orthogonal matrix to C_tilde
     return C_hat.T @ J_new                       # rotate new basis onto the old one
 
+#i need to fix all of these variable names (T should be n and t should be i)
 def run_estimator(X, L=100, k=1, dt=1.0):
     """V&F detector"""
     T, N = X.shape[0] - 1, X.shape[1]
