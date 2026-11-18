@@ -167,9 +167,9 @@ def truth(p):
 
 **The prediction.** When the spread is the calm portfolio, the reading and its normalized form are:
 
-```latex
+$`
 D_{\mathrm{pred}} = -\tfrac{1}{2}(1-\varphi)^2 \gamma, \qquad \rho_{\mathrm{pred}} = -\frac{1-\varphi}{2}, \qquad \text{valid while } (1-\varphi)\gamma < \tfrac{2}{3}
-```
+`$
 
 Above that limit the calm portfolio switches to both assets against cash, and the reading goes to about zero.
 
