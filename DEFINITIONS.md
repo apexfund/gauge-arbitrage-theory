@@ -15,8 +15,9 @@
 | Object | Python Variable | Definition | Shape/type |
 |---|---|---|---|
 | $`N`$ | `N` | Number of assets **including cash** | int |
+| $`t`$ | `t` | Time index | int |
 | $`T`$ | `T` | Total number of steps | int |
-| $`X`$ | `X` | Price matrix; `X[:, 0]` for cash | `(n+1, N)` float |
+| $`X`$ | `X` | Price matrix; `X[:, 0]` for cash | `(T+1, N)` float |
 | $`r`$ | `R` | Return matrix | `(T, N)` float |
 | $`d`$ | `d` | Number of independent Brownian motions | int |
 | $`k`$ | `k` | Number of calm portfolios (the true dimension of $`\mathcal{N}`$) | int |
