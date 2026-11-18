@@ -9,15 +9,15 @@
 
 ### Index Conventions
 - Asset 0 is cash (`X[:, 0] == 1`). `R[:, 0] == 0` always. Risky assets are `1 ... N-1`.
-- Time index `i` runs `0 ... n-1`; return `R[i]` is from price `X[i]` to `X[i+1]`
+- Time index `t` runs `0 ... T-1`; return `R[t]` is from price `X[t]` to `X[t+1]`
 
 ## 1. Data Layout
 | Object | Python Variable | Definition | Shape/type |
 |---|---|---|---|
 | $`N`$ | `N` | Number of assets **including cash** | int |
-| - | `n` | Total number of steps | int |
+| $`T`$ | `T` | Total number of steps | int |
 | $`X`$ | `X` | Price matrix; `X[:, 0]` for cash | `(n+1, N)` float |
-| $`r`$ | `R` | Return matrix | `(n, N)` float |
+| $`r`$ | `R` | Return matrix | `(T, N)` float |
 | $`d`$ | `d` | Number of independent Brownian motions | int |
 | $`k`$ | `k` | Number of calm portfolios (the true dimension of $`\mathcal{N}`$) | int |
 | $`J^A`$ | `J` | Calm Portfolios | `(N, k)` float |
@@ -31,7 +31,7 @@
 ## 2. `Series` class
 | Attribute | Definition | Shape/type |
 |---|---|---|
-| `T` | Total amount of time | float |
-| `n` | Total number of steps | int |
+| `horizon` | Total amount of time | float |
+| `T` | Total number of steps | int |
 |  `dt` | Time between steps | float |
-| `t` | Array of times | `(n+1,)` float |
+| `times` | Array of times | `(T+1,)` float |
