@@ -102,14 +102,14 @@ class vf_series(Series):
         B=np.array([self.bm() for i in range(sigma[mu].size)]) #define array of B (B(t)) in the formula.
         #this should create d=sigma[mu].size (# cols) Brownian motions, each of size n+1
         #We broadcast, NOT matrix multiply (that's what sigma[mu]*B.T does) and sum along d
-        return X_0*np.exp((alpha_mu[mu]-0.5*np.sum(np.square(sigma[mu])))*self.t + np.sum(sigma[mu]*B.T, axis=1))
+        return X_0*np.exp((alpha_mu[mu]-0.5*np.sum(np.square(sigma[mu])))*self.times + np.sum(sigma[mu]*B.T, axis=1))
 
     #FOR V&F SECTION 4.3 ONLY (same as the last function but i plugged the other section 4.3 functions in)
     def X_mu_43(self, sigma, beta, alpha_A, X_0, Z):
         """Solution to equation 106 for section 4.3 simulation"""
         B=np.array([self.vf_bm(Z, i) for i in range(sigma.shape[1])]) 
         return X_0*np.exp((calc_alpha_mu_43(sigma, beta, alpha_A)-
-                           0.5*np.sum(np.square(sigma), axis=1)) * self.t[:, None] + (sigma @ B).T)
+                           0.5*np.sum(np.square(sigma), axis=1)) * self.times[:, None] + (sigma @ B).T)
     
     def vf_bm(self, Z, i):
         dW=np.sqrt(self.dt) * Z[:, i]

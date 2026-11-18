@@ -7,16 +7,16 @@ import inspect #for the decorator
 from scipy.linalg import null_space
 
 class Series:  
-    """Creates time series.
+    """Creates time series for analysis using NumPy.
     Example:
     >>> from gauge_arbitrage import time_series
 
     >>> A=time_series.Series(100, 100, seed=0)
     >>> fig, ax=plt.subplots(1,1)
 
-    >>> ax.plot(A.t, A.bm())              # Brownian Motion (random walk)
-    >>> ax.plot(A.t, A.abm(0.5,0.5,0))    # Arithmetic Brownian Motion
-    >>> ax.plot(A.t, A.gbm(0.08, 0.2, 1)) # Geometric Brownian Motion"""
+    >>> ax.plot(A.times, A.bm())              # Brownian Motion (random walk)
+    >>> ax.plot(A.times, A.abm(0.5,0.5,0))    # Arithmetic Brownian Motion
+    >>> ax.plot(A.times, A.gbm(0.08, 0.2, 1)) # Geometric Brownian Motion"""
     def __init__(self, horizon, T, seed=0):
         self.horizon=horizon
         self.T=T
@@ -27,7 +27,7 @@ class Series:
         return self.horizon/self.T
     
     @property
-    def t(self):
+    def times(self):
         return np.linspace(0.0, self.horizon, self.T+1)
     
     def bm(self):
@@ -51,11 +51,11 @@ class Series:
 
     def abm(self, alpha, sigma, X_0):
         """Create arithmetic Brownian motion"""
-        return X_0+(alpha*self.t)+(sigma*self.bm())
+        return X_0+(alpha*self.times)+(sigma*self.bm())
 
     def gbm(self, alpha, sigma, X_0):
         """Create geometric Brownian motion"""
-        return X_0*np.exp((alpha-(0.5*sigma**2))*self.t+(sigma*self.bm()))
+        return X_0*np.exp((alpha-(0.5*sigma**2))*self.times+(sigma*self.bm()))
 
 
 if __name__ == "__main__":
