@@ -63,44 +63,73 @@ def run_estimator(X, L=100, k=1, dt=1.0):
         J_prev, a_prev = J, a
     return {"A2": A2, "alpha_hat": ah, "lambdas": lams, "J_hat": J_values}
 
-def run_detector(R, L=100, k=1, dt=1.0):
-    """V&F detector on a (steps x n) array of returns, any n >= 2.
+#NOTE: When running on the Vf_series generated data, set use_cash to False!!!!!!!!!!!!!!!
+def run_detector(R, L=250, refresh=5, n_dirs=1, use_cash=True, dt=1.0):
+    """V&F detector on a (steps x n) array of returns.
 
-    Returns dict:
-        products : (T,)        A2[t+1] = sum_A alpha_A(t) * alpha_A(t+1)      (Eq. 90)
-        alpha    : (T, k)      alpha_A(t+1) = J^A(t) . r_{t+1} / dt            (Eq. 89)
-        weights  : (T, k, n)   the portfolio(s) J^A(t) chosen at each step
-        lambdas  : (T, n-1)    all eigenvalues of G_hat(t), ascending
-    Rows before the first defined output are nan.
-    Window for Omega_hat(t) = R[t-L+1 : t+1]  (L returns ending at t inclusive).
-    Include cash as a column of zeros if you want it in the universe.
+    Parameters
+    ----------
+    R : ndarray, shape (T, n_in)
+        Per-step returns (log returns per DEFINITIONS §1). One column per asset.
+        If use_cash is True, a zero column is prepended, so n = n_in + 1;
+        otherwise n = n_in and R must already contain cash if you want it.
+    L : int
+        Covariance window length. Window for step t is R[t-L+1 : t+1].
+    refresh : int
+        Re-estimate the calm portfolio(s) every `refresh` steps; reuse in between.
+        refresh=1 re-estimates every step.
+    n_dirs : int
+        Number of calm portfolios k, 1 <= k <= n-1.
+    use_cash : bool
+        Prepend a column of zeros (cash, return 0) to R.
+    dt : float
+        Step size; divides Omega_hat and alpha_hat. Default 1 (per-step units).
+
+    Returns
+    -------
+    dict with
+    products : ndarray, shape (T,)
+        A2[t+1] = sum_A alpha_A(t) * alpha_A(t+1)  (Eq. 90).
+        nan for t <= L (no value until two consecutive alphas exist).
+    port_ret : ndarray, shape (T,) if n_dirs == 1, else (T, n_dirs)
+        alpha_A(t+1) = J^A(t) . r_{t+1} / dt  (Eq. 89). nan for t < L.
+    weights : ndarray, shape (n_refresh, n) if n_dirs == 1, else (n_refresh, n_dirs, n)
+        The portfolio(s) chosen at each refresh. Rows sum to 0, unit length.
+        n_refresh = ceil((T - L) / refresh).
+    refresh_times : ndarray, shape (n_refresh,)
+        The step index t at which each row of `weights` was estimated.
+    lambdas : ndarray, shape (n_refresh, n - 1)
+        All eigenvalues of G_hat(t) on the zero-sum plane, ascending, at each refresh.
+        Use to check the gap after the first n_dirs entries.
     """
     R = np.asarray(R, dtype=float)
-    if R.ndim != 2:
-        raise ValueError("R must be a 2-D (steps x n) array of returns")
+    if use_cash:
+        R = np.column_stack([np.zeros(len(R)), R])      # cash = column 0, return 0
     T, n = R.shape
-    if not 1 <= k <= n - 1:
-        raise ValueError(f"k must be between 1 and n-1 = {n-1}")
-    if T < L + 2:
-        raise ValueError(f"need at least L+2 = {L+2} steps, got {T}")
+    k = n_dirs
+    assert 1 <= k <= n - 1 and T >= L + 2
 
     products = np.full(T, np.nan)
-    alpha = np.full((T, k), np.nan)
-    weights = np.full((T, k, n), np.nan)
-    lambdas = np.full((T, n - 1), np.nan)
+    port_ret = np.full((T, k), np.nan)
+    weights, refresh_times = [], []
 
-    J_prev, a_prev = None, None
-    for t in range(L - 1, T - 1):                        # window ends at t; predict step t+1
-        W = R[t - L + 1: t + 1]                          # (L, n)
-        Omega_hat = np.cov(W, rowvar=False, bias=True) / dt   # Eq. (93)
-        G = G_hat(Omega_hat)                             # Eqs. (13, 85)
-        J, lam_k, lam_all = null_basis(G, k)             # Eqs. (86)-(88)
-        J = align(J, J_prev)                             # Appendix A
-        a = J @ R[t + 1] / dt                            # Eq. (89) on returns
-        #   (identical to alpha_hat(J, X[t], X[t+1], dt) when R[t+1] = (X[t+1]-X[t])/X[t])
+    J = J_prev = a_prev = None
+    for t in range(L - 1, T - 1):
+        if J is None or (t - (L - 1)) % refresh == 0:          # re-estimate every `refresh` steps
+            W = R[t - L + 1: t + 1]
+            Omega_hat = np.cov(W, rowvar=False, bias=True) / dt
+            J, _, _ = null_basis(G_hat(Omega_hat), k)
+            J = align(J, J_prev)
+            J_prev = J
+            weights.append(J.copy()); refresh_times.append(t)
+        a = J @ R[t + 1] / dt                                   # Eq. 89
         if a_prev is not None:
-            products[t + 1] = a @ a_prev                 # Eq. (90)
-        alpha[t + 1], weights[t + 1], lambdas[t + 1] = a, J, lam_all
-        J_prev, a_prev = J, a
+            products[t + 1] = a @ a_prev                        # Eq. 90
+        port_ret[t + 1] = a
+        a_prev = a
 
-    return {"products": products, "alpha": alpha, "weights": weights, "lambdas": lambdas}
+    weights = np.array(weights)                                 # (n_refresh, k, n)
+    if k == 1:
+        weights = weights[:, 0, :]                              # (n_refresh, n) as the spec says
+    return {"products": products, "port_ret": port_ret.squeeze(),
+            "weights": weights, "refresh_times": np.array(refresh_times)}
