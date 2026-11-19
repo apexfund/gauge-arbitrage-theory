@@ -26,8 +26,8 @@
 | $`\sigma^a_{\mu}`$ | `sigma` | Volatility Matrix | `(N, d)` float |
 | $`\alpha_{\mu}`$ | `alpha` | Drift of asset $`\mu`$ | `(N,)` float |
 | $`\alpha^A`$ | `alpha_A` | Drift of the null portfolio $`J^A`$ (V&F measure of arbitrage) | `(k,)` float |
-| $`\Gamma_0`$ | `Gamma0` | Contemporaneous covariance ($`\Gamma_0[i,j]=\mathrm{Cov}(r_{i,t},r_{j,t})`$) | `(N, N)` float |
-| $`\Gamma_1`$ | `Gamma1` | Lag-1 autocovariance ($`\Gamma_1[i,j]=\mathrm{Cov}(r_{i,t+1},r_{j,t})`$) | `(N, N)` float |
+| $`\Gamma_0`$ | `G0` | Contemporaneous covariance ($`\Gamma_0[i,j]=\mathrm{Cov}(r_{i,t},r_{j,t})`$) | `(N, N)` float |
+| $`\Gamma_1`$ | `G1` | Lag-1 autocovariance ($`\Gamma_1[i,j]=\mathrm{Cov}(r_{i,t+1},r_{j,t})`$) | `(N, N)` float |
 
 ## 2. `Series` class
 | Attribute | Definition | Shape/type |
