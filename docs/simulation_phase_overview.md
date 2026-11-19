@@ -67,9 +67,9 @@ You need a working detector function, Python with numpy and pandas, and the conv
 
 **Checklist before Part 1**
 
-- [ ] The reconstructed detector runs on a (steps × 2) array of returns and returns per-step products and the weights it chose
-- [ ] Everyone agrees whether the detector uses returns of prices or of log prices, and that is written in the code
-- [ ] A `results/` folder exists, with one subfolder per relationship
+- [x] The reconstructed detector runs on a (steps × 2) array of returns and returns per-step products and the weights it chose
+- [x] Everyone agrees whether the detector uses returns of prices or of log prices, and that is written in the code
+- [x] A `results/` folder exists, with one subfolder per relationship
 - [ ] A fixed list of random seeds is agreed, so results can be reproduced
 - [ ] Someone other than the author has read the detector against V&F Section 4.1
 
