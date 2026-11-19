@@ -29,7 +29,7 @@ def null_basis(G, k):
     return J, lam[:k], lam
 
 def alpha_hat(J, X, X_next, dt):
-    r=(X_next-X)/X
+    r=np.log(X_next/X)
     return J@r/dt #Eq. (89): compute alpha A
 
 def align(J_new, J_prev):
