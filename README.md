@@ -17,12 +17,12 @@ gauge_arbitrage_theory/
 │   ├── STATUS.md                     Progress tracker
 │   ├── project_overview.md           Reference doc
 │   ├── simulation_phase_overview.md  Reference for simulation phase
-├── notebooks/                Jupyter Notebooks (folder for each person in the pod), mainly for testing
-├── results/                  Simulation phase results for autocorrelation, cointegrated pair and lead-lag simulations
+├── notebooks/                
+├── results/                  Simulation phase results
 ├── src/gauge_arbitrage
 │   ├── time_series.py        Creates time series using NumPy
 │   └── vf/
 │   │  ├── detector.py        V&F's algorithm (section 4) used in the simulations
 │   │  ├── predict.py         Prediction calculator
-│   │  └── vf_series.py       Generates log-normal random walks according to V&F's 21 asset simulation (Fig. 1 in V&F)
+│   │  └── vf_series.py       V&F's 21 asset simulation random walks (Fig. 1 in V&F)
 ```
