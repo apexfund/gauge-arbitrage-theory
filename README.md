@@ -27,6 +27,8 @@ gauge_arbitrage_theory/
 │   │  └── vf_series.py       V&F's 21 asset simulation random walks (Fig. 1 in V&F)
 ```
 ## Overview of Variables
+A hat symbol above a variable (Ex. $`\hat{\alpha^A}`$) means it is an estimate for the true value.
+
 | symbol | code | meaning |
 |---|---|---|
 | $`T`$ | `T` | number of steps |
@@ -44,23 +46,34 @@ gauge_arbitrage_theory/
 ## Methods
 ### `run_detector()` algorithm
 
-The main detector algorithm is:
+The main detector algorithm is (Eq. 90):
 
 ```math
-\hat{\mathcal{A}}^2(t+1) = \sum_A \hat\alpha_A(t)\,\hat\alpha_A(t+1) \tag{90}
+\hat{\mathcal{A}}^2(t+1) = \sum_A \hat\alpha_A(t)\,\hat\alpha_A(t+1) 
 ```
 
-For each step $`t`$:
-- $`\hat\alpha_A(t+1) = \hat J^A(t)^\top r_{t+1}`$ — Eq. 89
+Detector variables (for each step $`t`$):
 
-1. $`\hat\Omega(t)`$ = sample covariance of `R[t-L+1 : t+1]`  — V&F Eq. 93
-2. $`\hat G(t) = P\,\hat\Omega(t)\,P`$ with $`P = I - \mathbf{1}\mathbf{1}^\top/n`$ — Eq. 85
+1. $`\hat\Omega(t)`$ = sample covariance of `R[t-L+1 : t+1]`: V&F Eq. 93
+2. $`\hat G(t) = P\,\hat\Omega(t)\,P`$ with $`P = I - \mathbf{1}\mathbf{1}^\top/n`$: Eq. 85
 3. $`\hat J^A(t)`$, $`A = 1..k`$: eigenvectors of $`\hat G`$ with the $`k`$ smallest
-   eigenvalues, computed on the zero-sum plane; sign-aligned to the previous
-   window — Eqs. 86–88, Appendix A
+   eigenvalues, computed on the zero-sum plane, sign-aligned to the previous
+   window: Eqs. 86–88, Appendix A
+4. $`\hat\alpha_A(t+1) = \hat J^A(t)^\top r_{t+1}`$: Eq. 89
 
 ### Theoretical detector value $`D`$
 
+We propose a formula for the theoretical detector value (summed over the calm directions):
+
+```math
+D=\sum_A (J^A)^{\top}(\Gamma_1+\mu\mu^{\top})J^A
+```
+where
+1. $`J^A`$ are the calm portfolios
+2. $`\Gamma_1`$: lag-1 autocovariance matrix
+3. $`\mu`$: mean return vector
+
+Thus, $`D`$ has a drift part $`(J^\top\mu)^2`$ and an autocovariance part $`J^\top\Gamma_1 J`$
 
 ## Results
 
