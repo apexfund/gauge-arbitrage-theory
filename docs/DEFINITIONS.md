@@ -20,7 +20,7 @@
 | $`X`$ | `X` | Price matrix; `X[:, 0]` for cash | `(T+1, N)` float |
 | $`r`$ | `R` | Return matrix | `(T, N)` float |
 | $`d`$ | `d` | Number of independent Brownian motions | int |
-| $`k`$ | `k` | Number of calm portfolios (the true dimension of $`\mathcal{N}`$) | int |
+| $`k`$ | `n_dirs`, `k` | Number of calm portfolios (the true dimension of $`\mathcal{N}`$) | int |
 | $`J^A`$ | `J` | Calm Portfolios | `(N, k)` float |
 | $`\mu`$ | `mu` | Mean Return Vector (not to be confused with the index $`\mu`$) | `(N,)` float |
 | $`\sigma^a_{\mu}`$ | `sigma` | Volatility Matrix | `(N, d)` float |
