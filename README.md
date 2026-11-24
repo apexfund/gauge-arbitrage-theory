@@ -16,7 +16,7 @@ gauge_arbitrage_theory/
 │   ├── DEFINITIONS.md                Shared definitions
 │   ├── STATUS.md                     Progress tracker
 │   ├── project_overview.md           Reference doc
-│   ├── simulation_phase_overview.md  Reference for simulation phase
+│   └── simulation_phase_overview.md  Reference for simulation phase
 ├── notebooks/                
 ├── results/                  Simulation phase results
 ├── src/gauge_arbitrage
@@ -26,5 +26,44 @@ gauge_arbitrage_theory/
 │   │  ├── predict.py         Prediction calculator
 │   │  └── vf_series.py       V&F's 21 asset simulation random walks (Fig. 1 in V&F)
 ```
+## Overview of Variables
+| symbol | code | meaning |
+|---|---|---|
+| $`T`$ | `T` | number of steps |
+| $`N`$ | `N` | number of assets (including cash) |
+| $`r_t`$ | `R[t]` | log returns at step $`t`$, shape `(T, n)` |
+| $`L`$ | `L` | covariance window length |
+| $`k`$ | `n_dirs` | number of calm portfolios |
+| $`d`$ | — | number of independent Brownian motions |
+| $`\hat J^A(t)`$ | `weights` | calm portfolio $`A`$ at step $`t`$ |
+| $`\hat\alpha_A`$ | `port_ret` | return of calm portfolio $`A`$ over one step (`alpha_A_hat` for `vf_series,py` only) |
+| $`\hat{\mathcal{A}}^2`$ | `products` | detector value per step |
+| $`\mu,\ \Gamma_0,\ \Gamma_1`$ | `moments()` | mean, covariance, lag-1 autocovariance of returns |
+| $`D`$ | — | population value of the detector for a fixed $`J`$: $`(J^\top\mu)^2 + J^\top\Gamma_1 J`$ |
+
+## Methods
+### `run_detector()` algorithm
+
+The main detector algorithm is:
+
+\begin{equation}
+  \hat{\mathcal{A}}^2(t+1) = \sum_A \hat\alpha_A(t)\,\hat\alpha_A(t+1)
+\end{equation}
+
+For each step $`t`$:
+- $`\hat\alpha_A(t+1) = \hat J^A(t)^\top r_{t+1}`$ — Eq. 89
+
+1. $`\hat\Omega(t)`$ = sample covariance of `R[t-L+1 : t+1]`  — V&F Eq. 93
+2. $`\hat G(t) = P\,\hat\Omega(t)\,P`$ with $`P = I - \mathbf{1}\mathbf{1}^\top/n`$ — Eq. 85
+3. $`\hat J^A(t)`$, $`A = 1..k`$: eigenvectors of $`\hat G`$ with the $`k`$ smallest
+   eigenvalues, computed on the zero-sum plane; sign-aligned to the previous
+   window — Eqs. 86–88, Appendix A
+
+### Theoretical detector value $`D`$
+
 
 ## Results
+
+
+Full conventions, shapes and known-answer values: [`DEFINITIONS.md`](docs/DEFINITIONS.md).
+Progress and status of each claim: [`STATUS.md`](docs/STATUS.md).
