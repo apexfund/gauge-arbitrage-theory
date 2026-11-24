@@ -6,26 +6,8 @@ Vázquez and Farinelli (V&F, arXiv 0908.3043) propose a gauge-invariant measure 
 - Run the detector on simulated market data (autocorrelation, lead-lag, cointegration)
 - Derive the detector's outputs for each model and check them using Monte Carlo
 
-## Layout
-```
-gauge_arbitrage_theory/
-├── README.md           
-├── walkthrough.ipynb                 Project walkthrough
-├── docs/
-│   ├── figures/                      Output plots
-│   ├── DEFINITIONS.md                Shared definitions
-│   ├── STATUS.md                     Progress tracker
-│   ├── project_overview.md           Reference doc
-│   └── simulation_phase_overview.md  Reference for simulation phase
-├── notebooks/                
-├── results/                  Simulation phase results
-├── src/gauge_arbitrage
-│   ├── time_series.py        Creates time series using NumPy
-│   └── vf/
-│   │  ├── detector.py        V&F's algorithm (section 4) used in the simulations
-│   │  ├── predict.py         Prediction calculator
-│   │  └── vf_series.py       V&F's 21 asset simulation random walks (Fig. 1 in V&F)
-```
+## Key Results
+
 ## Overview of Variables
 A hat symbol above a variable (Ex. $`\hat{\alpha^A}`$) means it is an estimate for the true value.
 
@@ -75,7 +57,53 @@ where
 
 Thus, $`D`$ has a drift part $`(J^\top\mu)^2`$ and an autocovariance part $`J^\top\Gamma_1 J`$
 
-## Results
+## Quickstart
+```bash
+git clone https://github.com/<you>/gauge-arbitrage-theory.git
+cd gauge-arbitrage-theory
+pip install -e .          
+```
+
+```python
+from gauge_arbitrage.vf import detector, vf_series
+import numpy as np
+
+T, n, d, N = 200, 200, 18, 20
+
+rng=np.random.default_rng(seed=0)
+
+beta_a=rng.uniform(low=-0.0001, high=0.0001, size=(d))                                        
+sigma=np.insert(rng.uniform(low=-0.001, high=0.001, size=(N, d)),0,  np.zeros(d), axis=0)   
+alpha_A=rng.uniform(low=-0.0001, high=0.0001, size=(2))  
+            
+series = vf_series.Vf_series(T, n)
+Z = rng.standard_normal((T, d)) 
+X=series.X_mu_43(sigma, beta_a, alpha_A, 1, Z)
+
+R = detector.calc_R(X)
+signals = detector.run_detector(R, L=100, n_dirs=2, use_cash=False) # Cash already included
+```
+
+## Layout
+```
+gauge_arbitrage_theory/
+├── README.md           
+├── walkthrough.ipynb                 Project walkthrough
+├── docs/
+│   ├── figures/                      Output plots
+│   ├── DEFINITIONS.md                Shared definitions
+│   ├── STATUS.md                     Progress tracker
+│   ├── project_overview.md           Reference doc
+│   └── simulation_phase_overview.md  Reference for simulation phase
+├── notebooks/                
+├── results/                  Simulation phase results
+├── src/gauge_arbitrage
+│   ├── time_series.py        Creates time series using NumPy
+│   └── vf/
+│   │  ├── detector.py        V&F's algorithm (section 4) used in the simulations
+│   │  ├── predict.py         Prediction calculator
+│   │  └── vf_series.py       V&F's 21 asset simulation random walks (Fig. 1 in V&F)
+```
 
 
 Full conventions, shapes and known-answer values: [`DEFINITIONS.md`](docs/DEFINITIONS.md).
