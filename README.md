@@ -1,12 +1,19 @@
 # gauge-arbitrage-theory
-Vázquez and Farinelli (V&F, arXiv 0908.3043) propose a gauge-invariant measure of arbitrage ($`\alpha^A`$) and a detector for it. We want to find out what that detector responds to. Specifically, we want to know what it means mathematically (what statistic of the return process it computes), what it means financially (what market behavior makes it positive, negative, or zero), and whether it is equivalent to, or a disguised version of, something already known, such as return autocorrelation, lead-lag structure, or cointegration. We are currently in the simulation phase, and we are finding out which kinds of market behavior make V&F's arbitrage detector read positive, negative, or zero using Monte Carlo simulations.
+Vázquez and Farinelli (V&F, arXiv 0908.3043) propose a gauge-invariant measure of arbitrage ($`\alpha^A`$) and a detector for it. We want to find out what that detector responds to. Specifically, we want to know what it means mathematically (what statistic of the return process it computes), what it means financially (what market behavior makes it positive, negative, or zero), and whether it is equivalent to, or a disguised version of, something already known, such as return autocorrelation, lead-lag structure, or cointegration. We are currently in the simulation phase, and we are finding out which kinds of market behavior make V&F's arbitrage detector read positive, negative, or zero.
 
 ## Objectives
 - Implement the detector from V&F and reproduce the paper's 21 asset simulation
 - Run the detector on simulated market data (autocorrelation, lead-lag, cointegration)
 - Derive the detector's outputs for each model and check them using Monte Carlo
 
-## Key Results
+## Current Results
+![Recreated V&F 21 asset simulation](docs/figures/fig_1_random_walks.png)
+
+*Figure 1: Recreation of V&F's 21 asset simulation (compare to V&F figure 1)*
+
+![Recreated detector output vs. theoretical result](docs/figures/fig_2_detector_values.png)
+
+*Figure 2: Recreation of V&F's detector output (compare to V&F figure 2)*
 
 ## Overview of Variables
 A hat symbol above a variable (Ex. $`\hat{\alpha^A}`$) means it is an estimate for the true value.
@@ -58,12 +65,14 @@ where
 Thus, $`D`$ has a drift part $`(J^\top\mu)^2`$ and an autocovariance part $`J^\top\Gamma_1 J`$
 
 ## Quickstart
+Run in terminal:
 ```bash
 git clone https://github.com/<you>/gauge-arbitrage-theory.git
 cd gauge-arbitrage-theory
 pip install -e .          
 ```
 
+Python example:
 ```python
 from gauge_arbitrage.vf import detector, vf_series
 import numpy as np
