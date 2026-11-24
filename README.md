@@ -46,9 +46,9 @@ gauge_arbitrage_theory/
 
 The main detector algorithm is:
 
-\begin{equation}
-  \hat{\mathcal{A}}^2(t+1) = \sum_A \hat\alpha_A(t)\,\hat\alpha_A(t+1)
-\end{equation}
+```math
+\hat{\mathcal{A}}^2(t+1) = \sum_A \hat\alpha_A(t)\,\hat\alpha_A(t+1) \tag{90}
+```
 
 For each step $`t`$:
 - $`\hat\alpha_A(t+1) = \hat J^A(t)^\top r_{t+1}`$ — Eq. 89
